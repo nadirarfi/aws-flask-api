@@ -2,6 +2,7 @@ import boto3
 from botocore.exceptions import ClientError
 
 
+
 # Get all security groups
 def get_all_security_groups():
     """
@@ -29,3 +30,31 @@ def get_security_groups_by_ids(group_ids:list):
     except ClientError as e:
         return str(e)
         
+
+
+def create_security_group(**params):
+    """
+    Create a security group, an example of configuration (check documentation)
+    params = {
+            "Description": "Allow SSH access",
+            "GroupName": "Nadir-security-group",
+            "TagSpecifications": [
+                {
+                    "ResourceType": "security-group",
+                    "Tags": [
+                        {
+                            "Key": "User",
+                            "Value": "Nadir"
+                        }
+                    ]
+                }
+            ]
+        }    
+
+    """
+    try:
+        ec2 = boto3.client("ec2")
+        security_group = ec2.create_security_group(**params)
+        return security_group
+    except ClientError as e:
+        return str(e)

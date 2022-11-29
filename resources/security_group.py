@@ -11,3 +11,13 @@ class SecurityGroupsByIds(Resource):
     def get(self):
         group_ids = request.args.get("group_ids").split(",")
         return get_security_groups_by_ids(group_ids=group_ids)
+
+
+class SecurityGroup(Resource):
+    def post(self):
+        """
+        Create a security group
+        """
+        data = request.get_json()
+        if data:           
+            return create_security_group(**data)

@@ -41,6 +41,25 @@ class BucketPolicy(Resource):
     def put(self):
         """
         Update bucket policy
+
+        {
+            "region": "eu-north-1",
+            "policy": {
+                    "Id": "Policy1668494172498",
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                        "Sid": "Stmt1668494168655",
+                        "Action": [
+                            "s3:GetObject"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": "arn:aws:s3:::nadir-mystaticwebsite/*",
+                        "Principal": "*"
+                        }
+                    ]
+                }
+            }
         """
         data = request.get_json()
         bucket_name = data["bucket"]

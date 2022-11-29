@@ -14,6 +14,9 @@ api = Api(app)
 # Security Group
 api.add_resource(AllSecurityGroups, '/api/sg/all')
 api.add_resource(SecurityGroupsByIds, '/api/sg/ids')
+api.add_resource(SecurityGroup, '/api/sg/create')
+
+
 
 # S3
 api.add_resource(Bucket, '/api/s3/bucket/create')
