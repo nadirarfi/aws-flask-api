@@ -21,3 +21,19 @@ class SecurityGroup(Resource):
         data = request.get_json()
         if data:           
             return create_security_group(**data)
+
+class SecurityGroupRule(Resource):
+    def post(self):
+        """
+        Create security group rule
+        """
+        data = request.get_json()
+        return True
+
+
+    def put(self):
+        """
+        Modify security group Rule
+        """
+        data = request.get_json()
+        return True

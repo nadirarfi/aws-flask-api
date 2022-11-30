@@ -85,3 +85,58 @@ class Versioning(Resource):
         bucket_name = data["bucket"]
         action = data["action"]        
         return versioning(bucket_name=bucket_name, action=action)
+
+
+class Object(Resource):
+    def post(self):
+        """
+        Upload one file into S3 bucket
+        {
+            "bucket": "nadir-mystaticwebsite",
+            "file_path": "M:/dev/nadir/aws-flask-api/s3_files"
+        }
+
+        """
+        data = request.get_json()
+        bucket_name = data["bucket"]
+        file_path = data["file_path"]
+        if "object_name" in data.keys():
+            object_name = data["object_name"]
+            return upload_file(file_path= file_path, bucket_name=bucket_name, object_name=object_name)
+        return upload_file(file_path= file_path, bucket_name=bucket_name, object_name=None)
+
+    def delete(self):
+        """
+        Delete some objects
+
+        {
+            "bucket": "nadir-mystaticwebsite",
+            "objects": [
+                "img1.png",
+                "img2.png"
+            ]
+        }
+
+        """
+        data = request.get_json()
+        bucket_name = data["bucket"]
+        objects = data["objects"]        
+        return delete_objects(bucket_name= bucket_name, objects= objects)
+
+
+class AllObjects(Resource):
+    def post(self):
+        """
+        Upload files into S3 bucket
+        e.g folder = ""
+
+        {
+            "bucket": "nadir-mystaticwebsite",
+            "folder_path": "M:/dev/nadir/aws-flask-api/s3_files"
+        }
+
+        """
+        data = request.get_json()
+        bucket_name = data["bucket"]
+        folder_path = data["folder_path"]
+        return upload_many_files(bucket_name=bucket_name, folder_path=folder_path)

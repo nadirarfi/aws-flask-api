@@ -1,3 +1,4 @@
+import os
 import boto3
 import json
 from botocore.exceptions import ClientError
@@ -15,10 +16,10 @@ def create_bucket(bucket_name:str, region_name:str):
             }
         ) 
         code = response['ResponseMetadata']['HTTPStatusCode']
-        return 
+        return True
     except ClientError as e:
-        return str(e)
-
+        print(e)
+        return False
 
 def get_all_buckets():
     """
@@ -29,7 +30,8 @@ def get_all_buckets():
         all_buckets = [bucket.name for bucket in s3_resource.buckets.all()] # List all buckets
         return all_buckets
     except ClientError as e:
-        return str(e)
+        print(e)
+        return False
 
 
 def filter_buckets(region_name:str, keywords=""):
@@ -52,8 +54,9 @@ def filter_buckets(region_name:str, keywords=""):
                     filtered_buckets.append(bucket_name)
         return filtered_buckets
     except ClientError as e:
-        return str(e)
-        
+        print(e)
+        return False
+
 
 def update_bucket_policy(bucket_name: str, bucket_policy:dict):
     """
@@ -65,9 +68,11 @@ def update_bucket_policy(bucket_name: str, bucket_policy:dict):
         response = bucketpolicy.put(Policy=json.dumps(bucket_policy))
         code = response['ResponseMetadata']['HTTPStatusCode']
         if code == 204:
-            return "Successful request. Bucket Policy has been updated."
+            print("Successful request. Bucket Policy has been updated.")
+            return True
     except ClientError as e:
-        return str(e)
+        print(e)
+        return False
 
 
 def delete_bucket_policy(bucket_name: str):
@@ -80,10 +85,12 @@ def delete_bucket_policy(bucket_name: str):
         response = bucketpolicy.delete()
         code = response['ResponseMetadata']['HTTPStatusCode']
         if code == 204:
-            return "Successful request. Bucket Policy has been deleted."
+            print("Successful request. Bucket Policy has been deleted.")
+            return True
     except ClientError as e:
-        return str(e)
-        
+        print(e)
+        return False
+
     
 def versioning(bucket_name:str, action:str):
     """
@@ -97,6 +104,50 @@ def versioning(bucket_name:str, action:str):
             versioning.enable() 
         if action == "disable":
             versioning.suspend()
-        return f"Versioning status: {versioning.status}" 
+        print(f"Versioning status: {versioning.status}")
+        return True
     except ClientError as e:
-        return str(e)    
+        print(e)
+        return False
+
+
+def upload_file(file_path:str, bucket_name:str, object_name=None):
+    """Upload a file to an S3 bucket
+    """
+    # If S3 object_name was not specified, use file_name
+    if object_name is None:
+        object_name = os.path.basename(file_path)
+
+    try:
+        s3_resource = boto3.resource('s3')
+        bucket = s3_resource.Bucket(bucket_name) # Get bucket 
+        response = bucket.upload_file(Filename= file_path, Key=object_name) # Upload object to S3
+        print("File has been successfully uploaded!")
+        return True
+    except ClientError as e:
+        print(e)
+        return False
+
+
+def upload_many_files(bucket_name:str, folder_path:str):
+    """
+    """
+    for path, subdirs, all_files in os.walk(folder_path): # Scan all files within subdirectories etc...
+        for file in all_files:
+            file_path = os.path.join(path, file) # File path     
+            upload_file(file_path= file_path, bucket_name= bucket_name)
+    return True
+
+
+def delete_objects(bucket_name:str, objects:list):
+    """Delete a file from S3 bucket
+    """
+    try:
+        s3_resource = boto3.resource('s3')
+        bucket = s3_resource.Bucket(bucket_name) # Get bucket 
+        response = bucket.delete_objects(Delete = {'Objects': [ {'Key': obj} for obj in objects ]})
+        print("Objects have been deleted.")
+        return True
+    except ClientError as e:
+        print(e)
+        return False

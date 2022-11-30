@@ -1,9 +1,18 @@
-from flask_restful import Resource
+import boto3
+from botocore.exceptions import ClientError
 
-class EC2(Resource):
 
-    def get(self):
-        return {'ec2': 'world'}
 
-    def post(self):
-        pass
+def get_endpoints():
+    """
+    Retrieve all available endpoints
+    """
+    try:
+        ec2 = boto3.client("ec2")
+        Response = ec2.describe_regions()
+        Regions = Response['Regions']
+        endpoints = [ region['Endpoint'] for region in Regions]
+        return endpoints
+    except ClientError as e:
+        print(e)
+        
