@@ -11,6 +11,8 @@ api = Api(app)
 
 # EC2
 #api.add_resource(EC2, '/api/ec2/')
+api.add_resource(EC2InstancesTypes, '/api/ec2/instances/types')
+api.add_resource(EC2Instances, '/api/ec2/instances')
 
 # Security Group
 api.add_resource(AllSecurityGroups, '/api/sg/all')

@@ -1,6 +1,10 @@
 import boto3
 from botocore.exceptions import ClientError
 
+from functions.helper import handle_datetime_values
+
+
+
 
 def get_all_keypairs():
     """
@@ -19,8 +23,9 @@ def get_keypair(keyname:str):
     try:
         ec2 = boto3.client("ec2")        
         keypair = ec2.describe_key_pairs(KeyNames=[keyname])['KeyPairs'][0]
-        date_time = keypair['CreateTime']
-        keypair.update(CreateTime = date_time.strftime("%m/%d/%Y, %H:%M:%S")) 
+        keypair = handle_datetime_values(keypair)
+        #date_time = keypair['CreateTime']
+        #keypair.update(CreateTime = date_time.strftime("%m/%d/%Y, %H:%M:%S")) 
         return keypair
     except ClientError as e:
         print(e)
